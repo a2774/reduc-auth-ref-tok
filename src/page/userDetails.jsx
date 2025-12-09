@@ -1,11 +1,12 @@
-import React, { use, useEffect, useState } from "react";
+import React, { useEffect, useState, useMemo, useCallback } from "react";
 import { useDispatch } from "react-redux";
 import { GetUser } from "../feature/user/userSlice.js";
-import { useCallback } from "react";
 
 function UserDetails() {
   const dispatch = useDispatch();
   const [userData, setUserData] = useState([]);
+  const [page, setPage] = useState(1);
+  const itemsPerPage = 6;
 
   useEffect(() => {
     GetUserAll();
@@ -15,6 +16,26 @@ function UserDetails() {
     const data = await dispatch(GetUser());
     setUserData(data?.payload?.users || []);
   }, [dispatch]);
+
+  const totalPages = Math.ceil(userData.length / itemsPerPage);
+
+  const paginatedUsers = useMemo(() => {
+    const start = (page - 1) * itemsPerPage;
+    const end = start + itemsPerPage;
+    return userData.slice(start, end);
+  }, [page, userData]);
+
+  const nextPage = useCallback(() => {
+    setPage((prev) => Math.min(prev + 1, totalPages));
+  }, [totalPages]);
+
+  const prevPage = useCallback(() => {
+    setPage((prev) => Math.max(prev - 1, 1));
+  }, []);
+
+  const goToPage = useCallback((pageNum) => {
+    setPage(pageNum);
+  }, []);
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-slate-900 via-purple-900 to-slate-900 p-8">
@@ -26,7 +47,7 @@ function UserDetails() {
         </div>
 
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
-          {userData.map((user) => (
+          {paginatedUsers.map((user) => (
             <div
               key={user.id}
               className="group bg-gradient-to-br from-slate-800 to-slate-900 rounded-2xl shadow-2xl hover:shadow-2xl hover:from-purple-800 hover:to-slate-900 transition-all duration-300 overflow-hidden border border-purple-500/20 hover:border-purple-500/60"
@@ -44,194 +65,52 @@ function UserDetails() {
                   />
                 </div>
 
-                <h2 className="text-2xl font-bold text-white text-center mb-1 group-hover:text-transparent group-hover:bg-clip-text group-hover:bg-gradient-to-r group-hover:from-purple-400 group-hover:to-pink-400 transition-all">
+                <h2 className="text-2xl font-bold text-white text-center mb-1 group-hover:text-transparent group-hover:bg-clip-text group-hover:bg-gradient-to-r group-hover:from-purple-400 group-hover:to-pink-400">
                   {user.firstName} {user.lastName}
                 </h2>
-                <p className="text-center text-purple-400 font-semibold text-sm mb-4">
-                  @{user.username}
-                </p>
-                <p className="text-center text-pink-400 text-sm font-medium mb-4">
-                  {user.role.toUpperCase()}
-                </p>
 
-                <div className="space-y-3 border-t border-purple-500/30 pt-4">
-                  <div className="flex justify-between text-sm">
-                    <span className="text-purple-300 font-semibold">
-                      👤 Gender:
-                    </span>
-                    <span className="text-slate-300">{user.gender}</span>
-                  </div>
-                  <div className="flex justify-between text-sm">
-                    <span className="text-purple-300 font-semibold">
-                      📧 Email:
-                    </span>
-                    <span className="text-slate-300 truncate">
-                      {user.email}
-                    </span>
-                  </div>
-                  <div className="flex justify-between text-sm">
-                    <span className="text-purple-300 font-semibold">
-                      📧 Password:
-                    </span>
-                    <span className="text-slate-300 truncate">
-                      {user.password}
-                    </span>
-                  </div>
-                  <div className="flex justify-between text-sm">
-                    <span className="text-purple-300 font-semibold">
-                      📱 Phone:
-                    </span>
-                    <span className="text-slate-300">{user.phone}</span>
-                  </div>
-                  <div className="flex justify-between text-sm">
-                    <span className="text-purple-300 font-semibold">
-                      🎂 Age:
-                    </span>
-                    <span className="text-slate-300">{user.age}</span>
-                  </div>
-                  <div className="flex justify-between text-sm">
-                    <span className="text-purple-300 font-semibold">
-                      📅 Birth Date:
-                    </span>
-                    <span className="text-slate-300">{user.birthDate}</span>
-                  </div>
-                </div>
+                <p className="text-center text-purple-400 font-semibold text-sm mb-4">@{user.username}</p>
+                <p className="text-center text-pink-400 text-sm font-medium mb-4">{user.role.toUpperCase()}</p>
 
-                <div className="border-t border-purple-500/30 mt-4 pt-4">
-                  <h3 className="font-bold text-purple-300 mb-2 text-sm">
-                    📍 ADDRESS
-                  </h3>
-                  <p className="text-xs text-slate-300 mb-1">
-                    {user.address.address}
-                  </p>
-                  <p className="text-xs text-slate-300 mb-1">
-                    {user.address.city}, {user.address.state}
-                  </p>
-                  <p className="text-xs text-pink-400 font-semibold">
-                    {user.address.country}
-                  </p>
-                </div>
-
-                <div className="border-t border-purple-500/30 mt-4 pt-4">
-                  <h3 className="font-bold text-purple-300 mb-2 text-sm">
-                    🏢 COMPANY
-                  </h3>
-                  <div className="space-y-1">
-                    <p className="text-xs">
-                      <span className="text-purple-400 font-semibold">
-                        Name:
-                      </span>{" "}
-                      <span className="text-slate-300">
-                        {user.company.name}
-                      </span>
-                    </p>
-                    <p className="text-xs">
-                      <span className="text-purple-400 font-semibold">
-                        Dept:
-                      </span>{" "}
-                      <span className="text-slate-300">
-                        {user.company.department}
-                      </span>
-                    </p>
-                    <p className="text-xs">
-                      <span className="text-purple-400 font-semibold">
-                        Title:
-                      </span>{" "}
-                      <span className="text-slate-300">
-                        {user.company.title}
-                      </span>
-                    </p>
-                  </div>
-                </div>
-
-                <div className="border-t border-purple-500/30 mt-4 pt-4">
-                  <h3 className="font-bold text-purple-300 mb-2 text-sm">
-                    💳 BANK
-                  </h3>
-                  <div className="space-y-1">
-                    <p className="text-xs">
-                      <span className="text-purple-400 font-semibold">
-                        Card:
-                      </span>{" "}
-                      <span className="text-slate-300 font-mono">
-                        ••••{user.bank.cardNumber.slice(-4)}
-                      </span>
-                    </p>
-                    <p className="text-xs">
-                      <span className="text-purple-400 font-semibold">
-                        Type:
-                      </span>{" "}
-                      <span className="text-slate-300">
-                        {user.bank.cardType}
-                      </span>
-                    </p>
-                    <p className="text-xs">
-                      <span className="text-purple-400 font-semibold">
-                        Expires:
-                      </span>{" "}
-                      <span className="text-slate-300">
-                        {user.bank.cardExpire}
-                      </span>
-                    </p>
-                  </div>
-                </div>
-
-                <div className="border-t border-purple-500/30 mt-4 pt-4">
-                  <h3 className="font-bold text-purple-300 mb-2 text-sm">
-                    ₿ CRYPTO
-                  </h3>
-                  <div className="space-y-1">
-                    <p className="text-xs">
-                      <span className="text-purple-400 font-semibold">
-                        Coin:
-                      </span>{" "}
-                      <span className="text-slate-300">{user.crypto.coin}</span>
-                    </p>
-                    <p className="text-xs">
-                      <span className="text-purple-400 font-semibold">
-                        Wallet:
-                      </span>{" "}
-                      <span className="text-slate-300 truncate font-mono text-xs">
-                        {user.crypto.wallet}
-                      </span>
-                    </p>
-                  </div>
-                </div>
-
-                <div className="border-t border-purple-500/30 mt-4 pt-4">
-                  <h3 className="font-bold text-purple-300 mb-2 text-sm">
-                    ℹ️ MORE INFO
-                  </h3>
-                  <div className="space-y-1">
-                    <p className="text-xs">
-                      <span className="text-purple-400 font-semibold">
-                        Blood:
-                      </span>{" "}
-                      <span className="text-slate-300">{user.bloodGroup}</span>
-                    </p>
-                    <p className="text-xs">
-                      <span className="text-purple-400 font-semibold">
-                        Eyes:
-                      </span>{" "}
-                      <span className="text-slate-300">{user.eyeColor}</span>
-                    </p>
-                    <p className="text-xs">
-                      <span className="text-purple-400 font-semibold">
-                        Height:
-                      </span>{" "}
-                      <span className="text-slate-300">{user.height}</span>
-                    </p>
-                    <p className="text-xs">
-                      <span className="text-purple-400 font-semibold">
-                        Weight:
-                      </span>{" "}
-                      <span className="text-slate-300">{user.weight}</span>
-                    </p>
-                  </div>
+                <div className="space-y-3 border-t border-purple-500/30 pt-4 text-slate-300 text-sm">
+                  <div className="flex justify-between"><span>👤 Gender:</span> <span>{user.gender}</span></div>
+                  <div className="flex justify-between"><span>📧 Email:</span> <span className="truncate">{user.email}</span></div>
+                  <div className="flex justify-between"><span>📱 Phone:</span> <span>{user.phone}</span></div>
+                  <div className="flex justify-between"><span>🎂 Age:</span> <span>{user.age}</span></div>
                 </div>
               </div>
             </div>
           ))}
+        </div>
+
+        <div className="flex justify-center mt-10 space-x-3">
+          <button
+            onClick={prevPage}
+            disabled={page === 1}
+            className="px-4 py-2 bg-purple-600 text-white rounded-lg disabled:bg-gray-500"
+          >
+            Prev
+          </button>
+
+          {Array.from({ length: totalPages }, (_, i) => i + 1).map((p) => (
+            <button
+              key={p}
+              onClick={() => goToPage(p)}
+              className={`px-4 py-2 rounded-lg ${
+                p === page ? "bg-pink-500 text-white" : "bg-slate-700 text-purple-300"
+              }`}
+            >
+              {p}
+            </button>
+          ))}
+
+          <button
+            onClick={nextPage}
+            disabled={page === totalPages}
+            className="px-4 py-2 bg-purple-600 text-white rounded-lg disabled:bg-gray-500"
+          >
+            Next
+          </button>
         </div>
       </div>
     </div>
