@@ -1,20 +1,40 @@
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useState, useMemo, useCallback } from "react";
 import { useDispatch } from "react-redux";
 import { GetProduct } from "../feature/user/userSlice";
 
 function Product() {
   const dispatch = useDispatch();
   const [products, setProducts] = useState([]);
+  const [page, setPage] = useState(1);
+  const itemsPerPage = 8;
 
-  const GetAllProduct = async () => {
+  const GetAllProduct = useCallback(async () => {
     const data = await dispatch(GetProduct());
-
-  console.log("data", data)
     setProducts(data?.payload?.products || []);
-  };
+  }, [dispatch]);
 
   useEffect(() => {
     GetAllProduct();
+  }, []);
+
+  const totalPages = Math.ceil(products.length / itemsPerPage);
+
+  const paginatedProducts = useMemo(() => {
+    const start = (page - 1) * itemsPerPage;
+    const end = start + itemsPerPage;
+    return products.slice(start, end);
+  }, [page, products]);
+
+  const nextPage = useCallback(() => {
+    setPage((prev) => Math.min(prev + 1, totalPages));
+  }, [totalPages]);
+
+  const prevPage = useCallback(() => {
+    setPage((prev) => Math.max(prev - 1, 1));
+  }, []);
+
+  const goToPage = useCallback((num) => {
+    setPage(num);
   }, []);
 
   return (
@@ -27,21 +47,15 @@ function Product() {
 
       <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-8 max-w-7xl mx-auto">
         {products.length === 0 && (
-          <p className="text-center text-purple-300 text-xl col-span-full">
-            Loading...
-          </p>
+          <p className="text-center text-purple-300 text-xl col-span-full">Loading...</p>
         )}
 
-        {products.map((p) => (
+        {paginatedProducts.map((p) => (
           <div
             key={p.id}
             className="bg-gradient-to-br from-slate-800/60 to-slate-900/60 backdrop-blur-xl rounded-2xl shadow-lg border border-purple-500/20 hover:border-purple-500/60 hover:shadow-purple-600/40 transition-all duration-300 overflow-hidden hover:-translate-y-2"
           >
-            <img
-              src={p.thumbnail}
-              alt={p.title}
-              className="w-full h-56 object-cover rounded-t-2xl"
-            />
+            <img src={p.thumbnail} alt={p.title} className="w-full h-56 object-cover rounded-t-2xl" />
 
             <div className="p-5">
               <h2 className="text-xl font-bold text-white mb-2">{p.title}</h2>
@@ -72,6 +86,36 @@ function Product() {
             </div>
           </div>
         ))}
+      </div>
+
+      <div className="flex justify-center mt-10 space-x-3">
+        <button
+          onClick={prevPage}
+          disabled={page === 1}
+          className="px-4 py-2 bg-purple-600 text-white rounded-lg disabled:bg-gray-600"
+        >
+          Prev
+        </button>
+
+        {Array.from({ length: totalPages }, (_, i) => i + 1).map((num) => (
+          <button
+            key={num}
+            onClick={() => goToPage(num)}
+            className={`px-4 py-2 rounded-lg ${
+              num === page ? "bg-pink-500 text-white" : "bg-slate-800 text-purple-300"
+            }`}
+          >
+            {num}
+          </button>
+        ))}
+
+        <button
+          onClick={nextPage}
+          disabled={page === totalPages}
+          className="px-4 py-2 bg-purple-600 text-white rounded-lg disabled:bg-gray-600"
+        >
+          Next
+        </button>
       </div>
     </div>
   );
