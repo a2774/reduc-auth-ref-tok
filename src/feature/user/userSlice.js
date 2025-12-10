@@ -39,6 +39,7 @@ export const loginUser = createAsyncThunk(
   "user/loginUser",
   async ({ email, password }, { rejectWithValue }) => {
     try {
+      debugger;
       const payload = {
         email: email.trim(),
         password: password.trim(),
@@ -63,6 +64,34 @@ export const loginUser = createAsyncThunk(
   }
 );
 
+export const logoutUser = createAsyncThunk(
+  "user/logoutUser",
+  async (_, { getState, rejectWithValue }) => {
+    debugger;
+    try {
+      const { accessToken, refreshToken } = getState().user;
+
+      const response = await fetch("http://localhost:5000/api/auth/logout", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: `Bearer ${accessToken}`,
+        },
+        body: JSON.stringify({ refreshToken }),
+      });
+
+      if (!response.ok) {
+        const data = await response.json().catch(() => null);
+        return rejectWithValue(data?.message || "Logout failed");
+      }
+
+      return true;
+    } catch (error) {
+      return rejectWithValue(error.message || "Network error");
+    }
+  }
+);
+
 const userSlice = createSlice({
   name: "user",
   initialState: {
@@ -74,7 +103,7 @@ const userSlice = createSlice({
     user: JSON.parse(localStorage.getItem("user")) || null,
     accessToken: localStorage.getItem("accessToken") || null,
     refreshToken: localStorage.getItem("refreshToken") || null,
-    isAuthenticated: localStorage.getItem("accessToken") ? true : false,
+    isAuthenticated: !!localStorage.getItem("accessToken"),
   },
 
   reducers: {
@@ -174,6 +203,20 @@ const userSlice = createSlice({
         state.isAuthenticated = false;
         state.error = action.payload;
         state.status = "failed";
+      })
+
+      .addCase(logoutUser.fulfilled, (state) => {
+        state.user = null;
+        state.accessToken = null;
+        state.refreshToken = null;
+        state.isAuthenticated = false;
+
+        localStorage.removeItem("user");
+        localStorage.removeItem("accessToken");
+        localStorage.removeItem("refreshToken");
+      })
+      .addCase(logoutUser.rejected, (state, action) => {
+        state.error = action.payload || "Logout failed";
       });
   },
 });
