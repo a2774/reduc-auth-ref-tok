@@ -1,22 +1,22 @@
 import React from "react";
-// import UserDetails from "./page/userDetails";
+
 import UserDetails from "./page/user/userDetails.jsx";
 import { BrowserRouter as Router, Route, Routes } from "react-router-dom";
-// import Navbar from "./navbar/navbar";
+
 import Navbar from "./components/navbar/navbar.jsx";
 
 import Signup from "./page/user/signup.jsx";
-// import Login from "./page/login";
+
 import Login from "./page/user/login.jsx";
-// import Product from "./page/product";
+
 import Product from "./page/product/product.jsx";
-// import ProductCategories from "./page/productCategories";
+
 import ProductCategories from "./page/product/productCategories.jsx";
-// import Home from "./page/home";
+
 import Home from "./page/home/home.jsx";
-// import Profile from "./page/Profile";
+
 import Profile from "./page/user/Profile.jsx";
-// import ProtectedRoute from "./page/ProtectedRoute";
+
 import ProtectedRoute from "./components/routes/RequireAuth.jsx";
 import { ToastContainer } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
