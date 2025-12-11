@@ -1,7 +1,7 @@
 import { createAsyncThunk, createSlice } from "@reduxjs/toolkit";
-
+const DUMMY_API = import.meta.env.VITE_DUMMY_API;
 export const GetProduct = createAsyncThunk("product/getProduct", async () => {
-  const res = await fetch("https://dummyjson.com/products");
+  const res = await fetch(`${DUMMY_API}/products`);
   return await res.json();
 });
 

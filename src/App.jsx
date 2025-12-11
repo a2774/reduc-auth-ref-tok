@@ -4,8 +4,8 @@ import UserDetails from "./page/user/userDetails.jsx";
 import { BrowserRouter as Router, Route, Routes } from "react-router-dom";
 // import Navbar from "./navbar/navbar";
 import Navbar from "./components/navbar/navbar.jsx";
-// import Singup from "./page/signup";
-import Singup from "./page/user/signup.jsx";
+
+import Signup from "./page/user/signup.jsx";
 // import Login from "./page/login";
 import Login from "./page/user/login.jsx";
 // import Product from "./page/product";
@@ -48,7 +48,7 @@ function App() {
             }
           />
 
-          <Route path="/singup" element={<Singup />} />
+          <Route path="/signup" element={<Signup />} />
 
           <Route path="/login" element={<Login />} />
 

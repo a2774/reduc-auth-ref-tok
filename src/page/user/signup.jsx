@@ -3,7 +3,7 @@ import { Link, useNavigate } from 'react-router-dom'
 import { useDispatch, useSelector } from 'react-redux'
 import { addUser } from '../../feature/user/userSlice.js'
 
-function Singup() {
+function Signup() {
   const dispatch = useDispatch()
   const navigate = useNavigate()
   const { loading, error } = useSelector(state => state.user)
@@ -161,4 +161,4 @@ function Singup() {
   )
 }
 
-export default Singup
+export default Signup

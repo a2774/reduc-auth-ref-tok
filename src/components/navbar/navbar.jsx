@@ -68,7 +68,7 @@ function Navbar() {
                   Login
                 </Link>
                 <Link
-                  to="/singup"
+                  to="/signup"
                   className="px-6 py-2 bg-gradient-to-r from-purple-600 to-pink-600 text-white font-semibold rounded-lg hover:from-purple-700 hover:to-pink-700 transition-all duration-200 shadow-lg hover:shadow-xl hover:scale-105 transform"
                 >
                   Sign Up
@@ -145,7 +145,7 @@ function Navbar() {
                   Login
                 </Link>
                 <Link
-                  to="/singup"
+                  to="/signup"
                   className="flex-1 px-4 py-2 bg-gradient-to-r from-purple-600 to-pink-600 text-white font-semibold rounded-lg hover:from-purple-700 hover:to-pink-700 transition-all duration-200"
                 >
                   Sign Up

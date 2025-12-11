@@ -1,7 +1,9 @@
 import { createAsyncThunk, createSlice } from "@reduxjs/toolkit";
+const API_BASE = import.meta.env.VITE_API_BASE;
+const DUMMY_API = import.meta.env.VITE_DUMMY_API;
 
 export const getUser = createAsyncThunk("user/getUser", async () => {
-  const response = await fetch("https://dummyjson.com/users");
+  const response = await fetch(`${DUMMY_API}/users`);
   const data = await response.json();
   return data;
 });
@@ -10,7 +12,7 @@ export const addUser = createAsyncThunk(
   "user/addUser",
   async (userData, { rejectWithValue }) => {
     try {
-      const response = await fetch("http://localhost:5000/api/auth/signup", {
+      const response = await fetch(`${API_BASE}/api/auth/signup`, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify(userData),
@@ -39,7 +41,7 @@ export const loginUser = createAsyncThunk(
         password: password.trim(),
       };
 
-      const response = await fetch("http://localhost:5000/api/auth/login", {
+      const response = await fetch(`${API_BASE}/api/auth/login`, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify(payload),
@@ -65,7 +67,7 @@ export const logoutUser = createAsyncThunk(
     try {
       const { accessToken, refreshToken } = getState().user;
 
-      const response = await fetch("http://localhost:5000/api/auth/logout", {
+      const response = await fetch(`${API_BASE}/api/auth/logout`, {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
