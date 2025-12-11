@@ -1,32 +1,20 @@
 import { createAsyncThunk, createSlice } from "@reduxjs/toolkit";
-const API_BASE = import.meta.env.VITE_API_BASE;
-const DUMMY_API = import.meta.env.VITE_DUMMY_API;
+import { signupAPI, loginAPI, logoutAPI } from "../../api/user/apiService";
+import {getUsersAPI} from "../../api/product/productapiService";
 
 export const getUser = createAsyncThunk("user/getUser", async () => {
-  const response = await fetch(`${DUMMY_API}/users`);
-  const data = await response.json();
-  return data;
+  const response = await getUsersAPI();
+  return response.data;
 });
 
 export const addUser = createAsyncThunk(
   "user/addUser",
   async (userData, { rejectWithValue }) => {
     try {
-      const response = await fetch(`${API_BASE}/api/auth/signup`, {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify(userData),
-      });
-
-      const data = await response.json().catch(() => null);
-
-      if (!response.ok) {
-        return rejectWithValue(data?.message || "Failed to add user");
-      }
-
-      return data;
+      const response = await signupAPI(userData);
+      return response.data;
     } catch (error) {
-      return rejectWithValue(error.message || "Network error");
+      return rejectWithValue(error?.response?.data?.message || "Failed to add user");
     }
   }
 );
@@ -35,27 +23,13 @@ export const loginUser = createAsyncThunk(
   "user/loginUser",
   async ({ email, password }, { rejectWithValue }) => {
     try {
-      debugger;
-      const payload = {
+      const response = await loginAPI({
         email: email.trim(),
         password: password.trim(),
-      };
-
-      const response = await fetch(`${API_BASE}/api/auth/login`, {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify(payload),
       });
-
-      const data = await response.json();
-
-      if (!response.ok) {
-        return rejectWithValue(data.message || "Invalid email or password");
-      }
-
-      return data;
+      return response.data;
     } catch (error) {
-      return rejectWithValue(error.message);
+      return rejectWithValue(error?.response?.data?.message || "Invalid email or password");
     }
   }
 );
@@ -63,27 +37,12 @@ export const loginUser = createAsyncThunk(
 export const logoutUser = createAsyncThunk(
   "user/logoutUser",
   async (_, { getState, rejectWithValue }) => {
-    debugger;
     try {
-      const { accessToken, refreshToken } = getState().user;
-
-      const response = await fetch(`${API_BASE}/api/auth/logout`, {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-          Authorization: `Bearer ${accessToken}`,
-        },
-        body: JSON.stringify({ refreshToken }),
-      });
-
-      if (!response.ok) {
-        const data = await response.json().catch(() => null);
-        return rejectWithValue(data?.message || "Logout failed");
-      }
-
+      const { refreshToken } = getState().user;
+      await logoutAPI(refreshToken);
       return true;
     } catch (error) {
-      return rejectWithValue(error.message || "Network error");
+      return rejectWithValue(error?.response?.data?.message || "Logout failed");
     }
   }
 );
@@ -92,7 +51,6 @@ const userSlice = createSlice({
   name: "user",
   initialState: {
     users: [],
-    products: [],
     status: null,
     error: null,
     loading: false,
@@ -129,26 +87,23 @@ const userSlice = createSlice({
         state.loading = true;
       })
       .addCase(getUser.fulfilled, (state, action) => {
-        state.users = action.payload.users;
-        state.status = "success";
         state.loading = false;
+        state.users = action.payload.users;
       })
       .addCase(getUser.rejected, (state, action) => {
-        state.status = "failed";
-        state.error = action.error.message;
         state.loading = false;
+        state.error = action.error.message;
       })
 
       .addCase(addUser.pending, (state) => {
         state.loading = true;
       })
       .addCase(addUser.fulfilled, (state, action) => {
+        state.loading = false;
         const { user, tokens } = action.payload;
 
-        state.loading = false;
-        state.status = "success";
-        state.isAuthenticated = true;
         state.user = user;
+        state.isAuthenticated = true;
         state.accessToken = tokens?.accessToken;
         state.refreshToken = tokens?.refreshToken;
 
@@ -157,22 +112,19 @@ const userSlice = createSlice({
         localStorage.setItem("refreshToken", tokens?.refreshToken);
       })
       .addCase(addUser.rejected, (state, action) => {
-        state.status = "failed";
-        state.error = action.payload;
         state.loading = false;
+        state.error = action.payload;
       })
 
       .addCase(loginUser.pending, (state) => {
         state.loading = true;
-        state.error = null;
       })
       .addCase(loginUser.fulfilled, (state, action) => {
+        state.loading = false;
         const { user, tokens } = action.payload;
 
-        state.loading = false;
-        state.isAuthenticated = true;
-        state.status = "success";
         state.user = user;
+        state.isAuthenticated = true;
         state.accessToken = tokens?.accessToken;
         state.refreshToken = tokens?.refreshToken;
 
@@ -184,7 +136,6 @@ const userSlice = createSlice({
         state.loading = false;
         state.isAuthenticated = false;
         state.error = action.payload;
-        state.status = "failed";
       })
 
       .addCase(logoutUser.fulfilled, (state) => {
@@ -198,7 +149,7 @@ const userSlice = createSlice({
         localStorage.removeItem("refreshToken");
       })
       .addCase(logoutUser.rejected, (state, action) => {
-        state.error = action.payload || "Logout failed";
+        state.error = action.payload;
       });
   },
 });
