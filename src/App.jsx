@@ -1,27 +1,50 @@
-import React from "react";
+import React, { useEffect } from "react";
+import { useDispatch, useSelector } from "react-redux";
+import { logout } from "./features/auth/authSlice";
+import { decodeJWT } from "./shared/jwtUtils";
 
-import UserDetails from "./page/user/userDetails.jsx";
+import UserDetails from "./pages/user/UserDetails.jsx";
 import { BrowserRouter as Router, Route, Routes } from "react-router-dom";
 
-import Navbar from "./components/navbar/navbar.jsx";
+import Navbar from "./shared/components/navbar/navbar.jsx";
 
-import Signup from "./page/user/signup.jsx";
+import Signup from "./pages/auth/Signup.jsx";
 
-import Login from "./page/user/login.jsx";
+import Login from "./pages/auth/Login.jsx";
 
-import Product from "./page/product/product.jsx";
+import Product from "./pages/product/product.jsx";
 
-import ProductCategories from "./page/product/productCategories.jsx";
+import ProductCategories from "./pages/product/productCategories.jsx";
 
-import Home from "./page/home/home.jsx";
+import Home from "./pages/home/Home.jsx";
 
-import Profile from "./page/user/Profile.jsx";
+import Profile from "./pages/user/Profile.jsx";
 
-import ProtectedRoute from "./components/routes/RequireAuth.jsx";
+import ProtectedRoute from "./routes/RequireAuth.jsx";
 import { ToastContainer } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
 
 function App() {
+  const dispatch = useDispatch();
+  const { refreshToken } = useSelector((state) => state.user);
+
+  useEffect(() => {
+    if (refreshToken) {
+      const decoded = decodeJWT(refreshToken);
+      if (decoded && decoded.exp) {
+        const expiresIn = decoded.exp * 1000 - Date.now();
+
+        if (expiresIn <= 0) {
+          dispatch(logout());
+        } else {
+          const timer = setTimeout(() => {
+            dispatch(logout());
+          }, expiresIn);
+          return () => clearTimeout(timer);
+        }
+      }
+    }
+  }, [refreshToken, dispatch]);
   return (
     <>
       <ToastContainer position="top-right" autoClose={3000} />

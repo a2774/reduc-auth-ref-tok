@@ -1,6 +1,6 @@
 import React, { useEffect, useState, useMemo, useCallback } from "react";
 import { useDispatch } from "react-redux";
-import { GetProduct } from "../../feature/product/productSlice";
+import { GetProduct } from "../../features/product/productSlice";
 
 function Product() {
   const dispatch = useDispatch();
@@ -101,9 +101,8 @@ function Product() {
           <button
             key={num}
             onClick={() => goToPage(num)}
-            className={`px-4 py-2 rounded-lg ${
-              num === page ? "bg-pink-500 text-white" : "bg-slate-800 text-purple-300"
-            }`}
+            className={`px-4 py-2 rounded-lg ${num === page ? "bg-pink-500 text-white" : "bg-slate-800 text-purple-300"
+              }`}
           >
             {num}
           </button>

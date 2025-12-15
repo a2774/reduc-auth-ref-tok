@@ -1,6 +1,6 @@
 import React, { useEffect, useState, useMemo, useCallback } from "react";
 import { useDispatch } from "react-redux";
-import { getUser } from "../../feature/user/userSlice.js";
+import { getUser } from "../../features/auth/authSlice.js";
 
 function UserDetails() {
   const dispatch = useDispatch();
@@ -96,9 +96,8 @@ function UserDetails() {
             <button
               key={p}
               onClick={() => goToPage(p)}
-              className={`px-4 py-2 rounded-lg ${
-                p === page ? "bg-pink-500 text-white" : "bg-slate-700 text-purple-300"
-              }`}
+              className={`px-4 py-2 rounded-lg ${p === page ? "bg-pink-500 text-white" : "bg-slate-700 text-purple-300"
+                }`}
             >
               {p}
             </button>

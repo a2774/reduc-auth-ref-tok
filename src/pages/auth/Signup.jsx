@@ -1,7 +1,7 @@
 import React, { useState } from 'react'
 import { Link, useNavigate } from 'react-router-dom'
 import { useDispatch, useSelector } from 'react-redux'
-import { addUser } from '../../feature/user/userSlice.js'
+import { addUser } from '../../features/auth/authSlice.js'
 
 function Signup() {
   const dispatch = useDispatch()
@@ -68,24 +68,24 @@ function Signup() {
     <div className="min-h-screen bg-gradient-to-br from-slate-900 via-purple-900 to-slate-900 flex items-center justify-center p-4">
       <div className="max-w-5xl w-full">
         <div className="grid grid-cols-1 lg:grid-cols-1 gap-8 items-center justify-center">
-          
+
           <div className="w-full max-w-md mx-auto">
             <div className="bg-gradient-to-br from-slate-800/50 to-slate-900/50 backdrop-blur-xl rounded-3xl p-8 border border-purple-500/30 shadow-2xl">
-              
+
               <div className="mb-8">
                 <h1 className="text-4xl font-bold text-white mb-2">Create Account</h1>
                 <p className="text-purple-300">Join our community today</p>
               </div>
 
               <form onSubmit={handleSubmit} className="space-y-5">
-                
+
                 {error && (
                   <div className="p-3 bg-red-500/20 border border-red-500 rounded-lg">
                     <p className="text-red-400 text-sm">{error}</p>
                   </div>
                 )}
 
-           
+
                 <div>
                   <label className="block text-sm font-semibold text-purple-300 mb-2">Full Name</label>
                   <input
@@ -101,7 +101,7 @@ function Signup() {
                   {errors.name && <p className="text-red-400 text-sm mt-1">{errors.name}</p>}
                 </div>
 
-                
+
                 <div>
                   <label className="block text-sm font-semibold text-purple-300 mb-2">Email Address</label>
                   <input
@@ -117,7 +117,7 @@ function Signup() {
                   {errors.email && <p className="text-red-400 text-sm mt-1">{errors.email}</p>}
                 </div>
 
-               
+
                 <div>
                   <label className="block text-sm font-semibold text-purple-300 mb-2">Password</label>
                   <input
@@ -147,7 +147,7 @@ function Signup() {
 
               <div className="mt-6 text-center">
                 <p className="text-slate-400">
-                  Already have an account? 
+                  Already have an account?
                   <Link to="/login" className="text-purple-400 hover:text-pink-400 font-semibold transition-colors"> Login here</Link>
                 </p>
               </div>

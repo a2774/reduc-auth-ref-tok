@@ -1,7 +1,7 @@
 import React, { useState } from 'react'
 import { Link, useNavigate } from 'react-router-dom'
 import { useDispatch, useSelector } from 'react-redux'
-import { loginUser } from '../../feature/user/userSlice.js'
+import { loginUser } from '../../features/auth/authSlice.js'
 import { toast } from "react-toastify";
 
 function Login() {
@@ -32,47 +32,47 @@ function Login() {
     return newErrors
   }
 
-const handleSubmit = async (e) => {
-  e.preventDefault();
+  const handleSubmit = async (e) => {
+    e.preventDefault();
 
-  const newErrors = validateForm();
-  if (Object.keys(newErrors).length > 0) {
-    setErrors(newErrors);
-    return;
-  }
-
-  try {
-    const result = await dispatch(
-      loginUser({
-        email: formData.email,
-        password: formData.password
-      })
-    );
-
-   
-    if (result.payload && !result.error) {
-      toast.success("Login successful!");
-      navigate("/");
-    } 
-
-    else if (result.payload) {
-      toast.error(result.payload); 
+    const newErrors = validateForm();
+    if (Object.keys(newErrors).length > 0) {
+      setErrors(newErrors);
+      return;
     }
 
-  } catch (error) {
-    console.error("Login failed:", error);
-    toast.error("Something went wrong. Please try again.");
-  }
-};
+    try {
+      const result = await dispatch(
+        loginUser({
+          email: formData.email,
+          password: formData.password
+        })
+      );
+
+
+      if (result.payload && !result.error) {
+        toast.success("Login successful!");
+        navigate("/");
+      }
+
+      else if (result.payload) {
+        toast.error(result.payload);
+      }
+
+    } catch (error) {
+      console.error("Login failed:", error);
+      toast.error("Something went wrong. Please try again.");
+    }
+  };
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-slate-900 via-purple-900 to-slate-900 flex items-center justify-center p-4">
       <div className="max-w-5xl w-full">
         <div className="grid grid-cols-1 lg:grid-cols-1 gap-8 items-center justify-center">
-          
+
           <div className="w-full max-w-md mx-auto">
             <div className="bg-gradient-to-br from-slate-800/50 to-slate-900/50 backdrop-blur-xl rounded-3xl p-8 border border-purple-500/30 shadow-2xl">
-              
+
               <div className="mb-8">
                 <h1 className="text-4xl font-bold text-white mb-2">Welcome Back</h1>
                 <p className="text-purple-300">Login to your account</p>
@@ -86,7 +86,7 @@ const handleSubmit = async (e) => {
 
               <form onSubmit={handleSubmit} className="space-y-6">
 
-               
+
                 <div>
                   <label className="block text-sm font-semibold text-purple-300 mb-2">Email</label>
                   <input
@@ -95,14 +95,13 @@ const handleSubmit = async (e) => {
                     value={formData.email}
                     onChange={handleChange}
                     placeholder="Enter your email"
-                    className={`w-full px-4 py-3 bg-slate-700/50 border rounded-lg text-white placeholder-slate-400 focus:outline-none focus:ring-2 focus:ring-purple-500 transition-all ${
-                      errors.email ? 'border-red-500' : 'border-purple-500/30 hover:border-purple-500/60'
-                    }`}
+                    className={`w-full px-4 py-3 bg-slate-700/50 border rounded-lg text-white placeholder-slate-400 focus:outline-none focus:ring-2 focus:ring-purple-500 transition-all ${errors.email ? 'border-red-500' : 'border-purple-500/30 hover:border-purple-500/60'
+                      }`}
                   />
                   {errors.email && <p className="text-red-400 text-sm mt-1">{errors.email}</p>}
                 </div>
 
-          
+
                 <div>
                   <label className="block text-sm font-semibold text-purple-300 mb-2">Password</label>
                   <input
@@ -111,9 +110,8 @@ const handleSubmit = async (e) => {
                     value={formData.password}
                     onChange={handleChange}
                     placeholder="Enter your password"
-                    className={`w-full px-4 py-3 bg-slate-700/50 border rounded-lg text-white placeholder-slate-400 focus:outline-none focus:ring-2 focus:ring-purple-500 transition-all ${
-                      errors.password ? 'border-red-500' : 'border-purple-500/30 hover:border-purple-500/60'
-                    }`}
+                    className={`w-full px-4 py-3 bg-slate-700/50 border rounded-lg text-white placeholder-slate-400 focus:outline-none focus:ring-2 focus:ring-purple-500 transition-all ${errors.password ? 'border-red-500' : 'border-purple-500/30 hover:border-purple-500/60'
+                      }`}
                   />
                   {errors.password && <p className="text-red-400 text-sm mt-1">{errors.password}</p>}
                 </div>

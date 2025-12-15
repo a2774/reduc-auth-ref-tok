@@ -1,8 +1,8 @@
 import React, { useState } from "react";
 import { Link } from "react-router-dom";
 import { useDispatch, useSelector } from "react-redux";
-import { logoutUser } from "../../feature/user/userSlice";
-import Logo from "../../assets/image/Anilvind.jpeg";
+import { logoutUser } from "../../../features/auth/authSlice";
+import Logo from "../../../assets/image/Anilvind.jpeg";
 
 function Navbar() {
   const [isOpen, setIsOpen] = useState(false);

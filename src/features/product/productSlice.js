@@ -1,8 +1,9 @@
 import { createAsyncThunk, createSlice } from "@reduxjs/toolkit";
-const DUMMY_API = import.meta.env.VITE_DUMMY_API;
+import { getProductsAPI } from "./productApi";
+
 export const GetProduct = createAsyncThunk("product/getProduct", async () => {
-  const res = await fetch(`${DUMMY_API}/products`);
-  return await res.json();
+  const res = await getProductsAPI();
+  return res.data;
 });
 
 const productSlice = createSlice({

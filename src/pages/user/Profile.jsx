@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from "react";
-import { authFetch } from "../../services/authFetch";
+import { getMeAPI } from "../../features/auth/authApi";
 
 function Profile() {
   const [data, setData] = useState(null);
@@ -7,9 +7,8 @@ function Profile() {
   useEffect(() => {
     async function loadProfile() {
       try {
-        const res = await authFetch("/api/auth/me", { method: "GET" });
-        const json = await res.json();
-        setData(json);
+        const res = await getMeAPI();
+        setData(res.data);
       } catch (err) {
         console.log("Profile Error:", err.message);
       }

@@ -1,6 +1,6 @@
 import React, { use, useCallback, useEffect, useState } from "react";
 import { useDispatch } from "react-redux";
-import { GetProduct } from "../../feature/product/productSlice";
+import { GetProduct } from "../../features/product/productSlice";
 
 function SectionProducts() {
   const dispatch = useDispatch();
@@ -8,7 +8,7 @@ function SectionProducts() {
 
   const categoriesToShow = ["beauty", "fragrances", "furniture", "groceries"];
 
- 
+
 
   const loadProduct = useCallback(async () => {
     const data = await dispatch(GetProduct());
